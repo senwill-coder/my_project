@@ -1,9 +1,7 @@
 
-
 import csv
 import glob
 import os
-
 import matplotlib.pyplot as plt
 import streamlit as st
 
@@ -191,10 +189,6 @@ def main():
     st.title("Статистика школи та переведення класів")
     school = load_school()
 
-    if not school.classes:
-        st.warning("Помістіть папку 'klasy' з CSV-файлами поруч із scenario_1.py")
-        return
-
     st.header("До переведення")
     show_statistics(school)
 
@@ -217,5 +211,5 @@ def main():
             st.rerun()
 
 
-if __name__ == "__main__":
-    main()
+
+main()
