@@ -1,8 +1,5 @@
-
 import csv
 import os
-
-
 class Employee:
     def __init__(self, full_name, base_salary):
         self.full_name = full_name
@@ -10,8 +7,6 @@ class Employee:
 
     def calculate_salary(self):
         return self.base_salary
-
-
 class Director(Employee):
     def __init__(self, full_name, base_salary, teaching_experience, management_experience):
         super().__init__(full_name, base_salary)
@@ -21,8 +16,6 @@ class Director(Employee):
     def calculate_salary(self):
         return (self.base_salary * self.teaching_experience / 50
                 + self.management_experience * 500)
-
-
 class Teacher(Employee):
     def __init__(self, full_name, base_salary, teaching_experience):
         super().__init__(full_name, base_salary)
@@ -30,8 +23,6 @@ class Teacher(Employee):
 
     def calculate_salary(self):
         return self.base_salary * self.teaching_experience / 30
-
-
 class Guard(Employee):
     def __init__(self, full_name, base_salary, work_experience):
         super().__init__(full_name, base_salary)
@@ -39,8 +30,6 @@ class Guard(Employee):
 
     def calculate_salary(self):
         return self.base_salary + self.work_experience * 250
-
-
 def main():
     employees = [
         Director("Мельник Оксана Петрівна", 15000, 29, 12),
@@ -86,7 +75,4 @@ def main():
             print(f"{role}: {employee.full_name} — {salary:.2f} грн")
 
     print(f"\nРезультати збережено у файл: {file_path}")
-
-
-if __name__ == "__main__":
     main()
