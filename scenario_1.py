@@ -4,11 +4,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import streamlit as st
-
-
 CSV_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "classes")
-
-
 class Student:
     def __init__(self, last_name, first_name, middle_name, birth_year, gender, average_grade):
         self.last_name = last_name
@@ -17,8 +13,6 @@ class Student:
         self.birth_year = int(birth_year)
         self.gender = gender
         self.average_grade = float(average_grade)
-
-
 class SchoolClass:
     def __init__(self, grade, section):
         self.grade = int(grade)
@@ -34,8 +28,6 @@ class SchoolClass:
             return False
         self.grade += 1
         return True
-
-
 class School:
     def __init__(self, name):
         self.name = name
@@ -47,12 +39,9 @@ class School:
     def promote_classes(self):
         self.classes = [school_class for school_class in self.classes if school_class.promote()]
         self.classes.sort(key=lambda school_class: (school_class.grade, school_class.section))
-
-
 def load_school():
     school = School("Моя школа")
     file_paths = sorted(glob.glob(os.path.join(CSV_FOLDER, "klas_*.csv")))
-
     for file_path in file_paths:
         with open(file_path, encoding="utf-8-sig", newline="") as file:
             reader = csv.DictReader(file)
@@ -77,8 +66,6 @@ def load_school():
 
     school.classes.sort(key=lambda school_class: (school_class.grade, school_class.section))
     return school
-
-
 def show_statistics(school):
     students = school.get_students()
     total_students = len(students)
@@ -90,11 +77,10 @@ def show_statistics(school):
     girls_percent = girls / total_students * 100 if total_students else 0
     students_per_class = total_students / total_classes if total_classes else 0
 
-    st.write(f"**Усього учнів:** {total_students}")
-    st.write(f"**Хлопців:** {boys} ({boys_percent:.2f}%)")
-    st.write(f"**Дівчат:** {girls} ({girls_percent:.2f}%)")
-    st.write(f"**Середня кількість учнів у класі:** {students_per_class:.2f}")
-
+    st.write(f"Усього учнів: {total_students}")
+    st.write(f"Хлопців: {boys} ({boys_percent:.2f}%)")
+    st.write(f"Дівчат: {girls} ({girls_percent:.2f}%)")
+    st.write(f"Середня кількість учнів у класі: {students_per_class:.2f}")
     if school.classes:
         largest = max(len(school_class.students) for school_class in school.classes)
         smallest = min(len(school_class.students) for school_class in school.classes)
@@ -106,21 +92,17 @@ def show_statistics(school):
             school_class.name for school_class in school.classes
             if len(school_class.students) == smallest
         )
-        st.write(f"**Максимум:** {largest} учнів — {largest_classes}")
-        st.write(f"**Мінімум:** {smallest} учнів — {smallest_classes}")
-
-
+        st.write(f"Максимум: {largest} учнів — {largest_classes}")
+        st.write(f"Мінімум: {smallest} учнів — {smallest_classes}")
 def show_charts(school):
     students = school.get_students()
-
-    # 1. Кількість учнів за паралелями.
+    #Кількість учнів за паралелями.
     grades = list(range(1, 12))
     counts_by_grade = [
         sum(len(school_class.students) for school_class in school.classes
             if school_class.grade == grade)
         for grade in grades
     ]
-
     figure, axis = plt.subplots(figsize=(10, 4))
     axis.bar(grades, counts_by_grade)
     axis.set_xticks(grades)
@@ -129,8 +111,7 @@ def show_charts(school):
     axis.set_ylabel("Кількість учнів")
     st.pyplot(figure)
     plt.close(figure)
-
-    # 2. Середня кількість учнів за вертикалями.
+    #Середня кількість учнів за вертикалями.
     sections = sorted({school_class.section for school_class in school.classes})
     averages_by_section = []
     for section in sections:
@@ -139,7 +120,6 @@ def show_charts(school):
             if school_class.section == section
         ]
         averages_by_section.append(sum(class_sizes) / len(class_sizes))
-
     figure, axis = plt.subplots(figsize=(7, 4))
     axis.bar(sections, averages_by_section)
     axis.set_title("Середня кількість учнів за вертикалями")
@@ -147,14 +127,12 @@ def show_charts(school):
     axis.set_ylabel("Середня кількість учнів")
     st.pyplot(figure)
     plt.close(figure)
-
-    # 3. Лінійний графік кількості учнів за роком народження.
+    #Лінійний графік кількості учнів за роком народження.
     birth_years = sorted({student.birth_year for student in students})
     counts_by_year = [
         sum(student.birth_year == year for student in students)
         for year in birth_years
     ]
-
     figure, axis = plt.subplots(figsize=(10, 4))
     axis.plot(birth_years, counts_by_year, marker="o")
     axis.set_xticks(birth_years)
@@ -164,8 +142,7 @@ def show_charts(school):
     axis.grid(alpha=0.3)
     st.pyplot(figure)
     plt.close(figure)
-
-    # 4. Scatter: середня оцінка кожного учня залежно від класу.
+    #Середня оцінка кожного учня залежно від класу.
     figure, axis = plt.subplots(figsize=(12, 5))
     for index, school_class in enumerate(school.classes):
         axis.scatter(
@@ -182,34 +159,25 @@ def show_charts(school):
     axis.grid(axis="y", alpha=0.3)
     st.pyplot(figure)
     plt.close(figure)
-
-
 def main():
     st.set_page_config(page_title="Статистика школи", layout="wide")
     st.title("Статистика школи та переведення класів")
     school = load_school()
-
     st.header("До переведення")
     show_statistics(school)
-
     st.header("Графіки")
     show_charts(school)
-
     st.header("Переведення на наступний рік")
     if st.button("Перевести всі класи"):
         st.session_state["promoted"] = True
-
     if st.session_state.get("promoted", False):
         school.promote_classes()
         st.subheader("Після переведення")
         st.write("Колишні 11-ті класи випустилися. Решта перейшла до наступної паралелі.")
-        st.write("**Класи:** " + ", ".join(school_class.name for school_class in school.classes))
+        st.write("Класи: " + ", ".join(school_class.name for school_class in school.classes))
         show_statistics(school)
 
         if st.button("Скинути переведення"):
             st.session_state["promoted"] = False
             st.rerun()
-
-
-
 main()
